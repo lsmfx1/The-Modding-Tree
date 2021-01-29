@@ -1,23 +1,23 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
-	pointsName: "points",
+	name: "The Ice Pop Tree",
+	id: "Lsmfx1IceGame",
+	author: "Frost Endwood",
+	pointsName: "warmth",
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal (10), // Used for hard resets and new players
 	
-	offlineLimit: 1,  // In hours
+	offlineLimit: 6,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.01",
+	name: "Creating Animations",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
+	<h3>v0.1</h3><br>
 		- Added things.<br>
 		- Added stuff.`
 
