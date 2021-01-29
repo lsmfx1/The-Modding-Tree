@@ -15,9 +15,9 @@ addLayer("h", {
         return mult
     },*/
     row: 0, // Row the layer is in on the tree (0 is the first row)
-    hotkeys: [
+    /*hotkeys: [
         {key: "h", description: "H: Reset for Heat", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
-    ],
+    ],*/
     buyables: {
         rows: 3,
         cols: 2,
