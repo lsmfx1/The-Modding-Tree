@@ -5,7 +5,7 @@ let modInfo = {
 	pointsName: "warmth",
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	initialStartPoints: new Decimal (0), // Used for hard resets and new players
 	
 	offlineLimit: 6,  // In hours
 }
@@ -13,13 +13,15 @@ let modInfo = {
 // Set your version in num and name
 let VERSION = {
 	num: "0.01",
-	name: "Creating Animations",
+	name: "Buy some Heat",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.1</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+	<h3>v0.01</h3><br>
+		- Added heat layer.<br>
+		- Added heat buyable.<br>
+		- Added heat friction.<br>
+		- TEMP Added heat DEBUG.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -31,18 +33,31 @@ function getStartPoints(){
     return new Decimal(modInfo.initialStartPoints)
 }
 
+//HeatHolderName which can be upgraded
+var HeatHolderName = "Body"
+var MaximumHeat = new Decimal(50)
+var Cold = new Decimal(0.5)
+
 // Determines if it should show points/sec
 function canGenPoints(){
-	return true
+	return player.points.lt(MaximumHeat)
 }
+
+
 
 // Calculate points/sec!
 function getPointGen() {
-	if(!canGenPoints())
+	var gain = new Decimal(1).mul(player["h"].points)
+	var total = gain.sub(Cold)
+	var postTotal = player.points.add(total)
+	
+	if(total.lt(0))
+		return total
+	if(postTotal.gte(MaximumHeat) || !canGenPoints())
+		return MaximumHeat.sub(player.points)
+	if(player.points.eq(MaximumHeat))
 		return new Decimal(0)
-
-	let gain = new Decimal(1)
-	return gain
+	return total
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
@@ -50,8 +65,10 @@ function addedPlayerData() { return {
 }}
 
 // Display extra things at the top of the page
-var displayThings = [
+var displayThings = [ "Your " + HeatHolderName + " allows a maximum warmth of " + MaximumHeat
 ]
+
+
 
 // Determines when the game "ends"
 function isEndgame() {
