@@ -76,3 +76,62 @@ addLayer("h", {
     ],
     layerShown(){return true},
 })
+addLayer("f", {
+    name: "fridge", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "F", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+    }},
+    color: "#808080",
+    requires: new Decimal(30), // Can be a function that takes requirement increases into account
+    resource: "Exploration Potential", // Name of prestige currency
+    baseResource: "warmth", // Name of resource prestige is based on
+    baseAmount() {return player.points}, // Get the current amount of baseResource
+    type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    exponent: 0.5, // Prestige currency exponent
+    row: 1, // Row the layer is in on the tree (0 is the first row)
+    buyables: {
+        rows: 2,
+        cols: 2,
+        11: {
+            cost(x) { return new Decimal(0) },
+            unlocked() { return player[this.layer].points.eq(1) },
+            display() { if(getBuyableAmount(this.layer, this.id).equals(new Decimal(0))) return "Req " + player.points.round() + "/30 warmth\nOpen Cold Fridge for Loot"
+            else return "Close Fridge before you freeze!" },
+            canAfford() { return player.points.gt(30) || getBuyableAmount(this.layer, this.id).equals(new Decimal(1)) },
+            buy() {
+                if(getBuyableAmount(this.layer, this.id).equals(new Decimal(0))) {
+                    Cold = Cold.add(new Decimal(3))
+                    setBuyableAmount(this.layer, this.id, new Decimal(1))
+                } else {
+                    Cold = Cold.sub(new Decimal(3))
+                    setBuyableAmount(this.layer, this.id, new Decimal(0))
+                }
+            }
+        },
+        21: {
+            cost(x) { return new Decimal(0) },
+            unlocked() { return getBuyableAmount(this.layer, "11").equals(new Decimal(1)) },
+            display() { return "Grab the " + "Good" + " loot! (UNFINISHED)" },
+            canAfford() { return getBuyableAmount(this.layer, "11").equals(new Decimal(1)) }, //eventually conditional && getBuyableAmount(this.layer, this.id).lt(20) },
+            buy() {
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            }
+            
+        }
+    },
+    tabFormat: [
+        ["display-text", () => "A fridge stands before you"],
+        "prestige-button",
+        ["buyable", 11],
+        ["buyable", 21],
+    ],
+    prestigeButtonText() { if(player[this.layer].points.eq(0)) return "Sacrafice your hand heat to a cold plug to power it?" 
+    else return "Fridge Powered at 120V" },
+    getResetGain() { return new Decimal(1)},
+    getNextAt() { return new Decimal(10000)},
+    canReset() { return player.points.gt(30) && player[this.layer].points.eq(0) },
+    layerShown(){return true},
+})
