@@ -113,9 +113,19 @@ h1, h2, h3, b, input {
 
 .can:hover {
 	transform: scale(1.15, 1.15);
-	box-shadow: 0 0 20px var(--points)
+	box-shadow: 0 0 20px var(--points);
 }
 
+.recharge {
+	background: linear-gradient(to top, #D2691E 50%, #FFD700 50%);
+	background-size: 100% 200%;
+	animation: Restock 5s infinite;
+}
+
+@keyframes Restock {
+	from { background-position:right bottom; }
+	to { background-position:left top; }
+}
 
 .resetNotify {
 	box-shadow: var(--hqProperty2a), 0 0 8px #ffffff;

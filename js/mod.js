@@ -12,11 +12,15 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.02",
-	name: "Open Some Cold",
+	num: "0.03",
+	name: "Grab some things",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.03</h3><br>
+		- Added button resizing.<br>
+		- Added animation of cooldown.<br>
+		- Added timer of cooldown.<br>	
 	<h3>v0.02</h3><br>
 		- Added fridge layer.<br>
 		- Added open fridge function.<br>
@@ -47,7 +51,9 @@ function canGenPoints(){
 	return player.points.lt(MaximumHeat)
 }
 
-
+function rechargeThings(){
+	var thing = setInterval(function(){ setBuyableAmount("f", "21", getBuyableAmount("f", "21").minus(1)) }, 5)
+}
 
 // Calculate points/sec!
 function getPointGen() {

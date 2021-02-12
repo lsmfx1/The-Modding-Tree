@@ -83,6 +83,9 @@ addLayer("f", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
+        rechargeTimes: {
+            21: new Date()
+        },
     }},
     color: "#808080",
     requires: new Decimal(30), // Can be a function that takes requirement increases into account
@@ -97,7 +100,7 @@ addLayer("f", {
         cols: 2,
         11: {
             cost(x) { return new Decimal(0) },
-            unlocked() { return player[this.layer].points.eq(1) },
+            unlocked() { return player[this.layer].points.gt(1) },
             display() { if(getBuyableAmount(this.layer, this.id).equals(new Decimal(0))) return "Req " + player.points.round() + "/30 warmth\nOpen Cold Fridge for Loot"
             else return "Close Fridge before you freeze!" },
             canAfford() { return player.points.gt(30) || getBuyableAmount(this.layer, this.id).equals(new Decimal(1)) },
@@ -114,16 +117,51 @@ addLayer("f", {
         21: {
             cost(x) { return new Decimal(0) },
             unlocked() { return getBuyableAmount(this.layer, "11").equals(new Decimal(1)) },
-            display() { return "Grab the " + "Good" + " loot! (UNFINISHED)" },
-            canAfford() { return getBuyableAmount(this.layer, "11").equals(new Decimal(1)) }, //eventually conditional && getBuyableAmount(this.layer, this.id).lt(20) },
+            recharge() { var rechargeTime = player.f.rechargeTimes[this.id]
+                if (rechargeTime > Date.now()) return true
+                else
+                    setBuyableAmount(this.layer, this.id, new Decimal(0))
+                    return false
+                //return getBuyableAmount(this.layer, this.id).gt(new Decimal(0)) 
+            },
+            display() { if(getBuyableAmount(this.layer, this.id).gt(new Decimal(0))) return "Restocking..."
+                            else return "Grab the " + "Good" + " loot! (UNFINISHED) "},
+            canAfford() { return getBuyableAmount(this.layer, "11").equals(new Decimal(1)) && !getBuyableAmount(this.layer, this.id).gt(new Decimal(0)) }, //eventually conditional && getBuyableAmount(this.layer, this.id).lt(20) },
             buy() {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                var d = new Date(Date.now() + 999 * 5);
+                player.f.rechargeTimes[this.id] = d;
+                //getBuyableAmount(this.layer, this.id).gt(new Decimal(0))
+            },
+            /* For debugging
+            sellOne(){
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).minus(1))
+            },*/
+            style() {
+                if(getBuyableAmount(this.layer, this.id).equals(new Decimal(0)))
+                return {
+                'border-color': '#D4AF37',
+				'background-color': '#FFD700',
+				'color': '#4E2924',
+				'font-size': '15px',
+                'height': '128px',
+                'width': '128px'
+				}
+                else
+                return {
+                    'border-color': '#D4AF37',
+                    'background-color': '#FFD700',
+                    'color': '#4E2924',
+                    'font-size': '15px',
+                    'height': '128px',
+                    'width': '128px'
+                    }
             }
-            
         }
     },
     tabFormat: [
         ["display-text", () => "A fridge stands before you"],
+        "main-display",
         "prestige-button",
         ["buyable", 11],
         ["buyable", 21],
