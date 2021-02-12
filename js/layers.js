@@ -89,7 +89,7 @@ addLayer("f", {
     }},
     color: "#808080",
     requires: new Decimal(30), // Can be a function that takes requirement increases into account
-    resource: "Exploration Potential", // Name of prestige currency
+    resource: "Volts", // Name of prestige currency
     baseResource: "warmth", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
@@ -100,17 +100,19 @@ addLayer("f", {
         cols: 2,
         11: {
             cost(x) { return new Decimal(0) },
-            unlocked() { return player[this.layer].points.gt(1) },
+            unlocked() { return player[this.layer].points.gt(0) },
             display() { if(getBuyableAmount(this.layer, this.id).equals(new Decimal(0))) return "Req " + player.points.round() + "/30 warmth\nOpen Cold Fridge for Loot"
             else return "Close Fridge before you freeze!" },
             canAfford() { return player.points.gt(30) || getBuyableAmount(this.layer, this.id).equals(new Decimal(1)) },
             buy() {
                 if(getBuyableAmount(this.layer, this.id).equals(new Decimal(0))) {
+                    player.points = player.points.minus(30)
                     Cold = Cold.add(new Decimal(3))
                     setBuyableAmount(this.layer, this.id, new Decimal(1))
                 } else {
                     Cold = Cold.sub(new Decimal(3))
                     setBuyableAmount(this.layer, this.id, new Decimal(0))
+                    player.f.rechargeTimes["21"] = Date.now()
                 }
             }
         },
@@ -163,13 +165,16 @@ addLayer("f", {
         ["display-text", () => "A fridge stands before you"],
         "main-display",
         "prestige-button",
+        "blank",
         ["buyable", 11],
+        "blank",
         ["buyable", 21],
     ],
     prestigeButtonText() { if(player[this.layer].points.eq(0)) return "Sacrafice your hand heat to a cold plug to power it?" 
-    else return "Fridge Powered at 120V" },
-    getResetGain() { return new Decimal(1)},
+    else return "Fridge Powered on" },
+    getResetGain() { return new Decimal(120)},
     getNextAt() { return new Decimal(10000)},
     canReset() { return player.points.gt(30) && player[this.layer].points.eq(0) },
     layerShown(){return true},
 })
+//Ideas: Surge Protector, Gloves, 
